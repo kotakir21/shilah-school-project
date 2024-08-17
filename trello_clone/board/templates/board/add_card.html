@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Card to {{ list.name }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Add Card to {{ list.name }}</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label">Title</label>
+                    <div class="control">
+                        {{ form.title.errors }}
+                        {{ form.title }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Description</label>
+                    <div class="control">
+                        {{ form.description.errors }}
+                        {{ form.description }}
+                    </div>
+                </div>
+                <div class="control">
+                    <button class="button is-link" type="submit">Add Card</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

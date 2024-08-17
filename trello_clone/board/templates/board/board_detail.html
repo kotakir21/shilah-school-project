@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ board.name }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .list-container {
+            display: flex;
+            flex-direction: row;
+            overflow-x: auto;
+            gap: 1rem;
+        }
+        .list {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 0 8px;
+            width: 320px;
+            flex-shrink: 0;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .card-title {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #333;
+            font-weight: bold;
+        }
+        .card-description {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #666;
+        }
+        .move-button {
+            cursor: pointer;
+            color: #3273dc;
+            font-size: 1.1rem;
+        }
+        .move-form {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            width: 100%;
+        }
+        .move-form.active {
+            display: block;
+        }
+        .select {
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">{{ board.name }}</h1>
+            <div class="list-container">
+                {% for list in board.lists.all %}
+                    <div class="list">
+                        <h2 class="subtitle">{{ list.name }}</h2>
+                        {% for card in list.cards.all %}
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">{{ card.title }}</h3>
+                                    <span class="move-button" onclick="toggleMoveForm('{{ card.id }}')">
+                                        <i class="fas fa-arrows-alt"></i> <!-- Move icon -->
+                                    </span>
+                                </div>
+                                <p class="card-description">{{ card.description }}</p>
+                                <!-- Move card form -->
+                                <form method="POST" action="{% url 'move_card' %}" class="move-form" id="move-form-{{ card.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="card_id" value="{{ card.id }}">
+                                    <div class="select">
+                                        <select name="list_id" required>
+                                            <option value="">Move to...</option>
+                                            {% for target_list in board.lists.all %}
+                                                {% if target_list != list %}
+                                                    <option value="{{ target_list.id }}">{{ target_list.name }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="button is-small is-info">Move</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                        <a href="{% url 'add_card' list.id %}" class="button is-link is-small">Add Card</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <script>
+        function toggleMoveForm(cardId) {
+            const form = document.getElementById('move-form-' + cardId);
+            form.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
